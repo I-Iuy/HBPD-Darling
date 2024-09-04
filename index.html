@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login-Index</title>
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* Phần dành cho body, toàn bộ trang */
+        body {
+            font-family: 'Raleway', sans-serif;
+            background-color: #ffe6e6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Phần dành cho khung đăng nhập */
+        .login-container {
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0px 15px 25px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            max-width: 90%;
+            width: 100%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        /* Phần dành cho khung nhập nội dung gõ */
+        .typing-container {
+            margin-bottom: 20px;
+            overflow: hidden;
+            font-size: 5vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Phần dành cho các bộ chọn ngày tháng năm */
+        .date-selectors {
+            display: none;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            transition: opacity 0.5s ease-in;
+        }
+
+        /* Phần dành cho các thẻ chọn ngày, tháng, năm */
+        select {
+            padding: 10px;
+            border-radius: 5px;
+            border: 2px solid #ddd;
+            font-size: 4vw;
+            width: 32%;
+            transition: border-color 0.3s ease;
+        }
+
+        select:focus {
+            border-color: #ff7e5f;
+            outline: none;
+            box-shadow: 0px 0px 5px rgba(255, 126, 95, 0.5);
+        }
+
+        /* Phần dành cho nút xác nhận */
+        input[type="button"] {
+            display: none;
+            padding: 15px;
+            background-color: #ff7e5f;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 5vw;
+            width: 100%;
+            margin-top: 10px;
+            transition: opacity 0.5s ease-in;
+        }
+
+        input[type="button"]:hover {
+            background-color: #eb6843;
+        }
+
+        /* Phần dành cho thông báo lỗi */
+        .error {
+            color: red;
+            margin-top: 15px;
+            font-size: 4vw;
+        }
+
+        /* Phần CSS cho màn hình lớn hơn (Tablet, Desktop) */
+        @media (min-width: 768px) {
+            .login-container {
+                max-width: 400px;
+            }
+
+            .typing-container {
+                font-size: 28px;
+            }
+
+            select {
+                font-size: 16px;
+            }
+
+            input[type="button"] {
+                font-size: 18px;
+            }
+
+            .error {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="login-container">
+        <div id="typing-area" class="typing-container"></div>
+        <div> <img src="https://i.pinimg.com/originals/aa/c2/f7/aac2f7ff20e8a79970a4f17362919ef2.gif"></div>
+        <div class="date-selectors" id="date-selectors">
+            <select id="day">
+                <option value="">Ngày</option>
+                <script>
+                    for (let i = 1; i <= 31; i++) {
+                        document.write('<option value="' + (i < 10 ? '0' : '') + i + '">' + i + '</option>');
+                    }
+                </script>
+            </select>
+            <select id="month">
+                <option value="">Tháng</option>
+                <script>
+                    for (let i = 1; i <= 12; i++) {
+                        document.write('<option value="' + (i < 10 ? '0' : '') + i + '">' + i + '</option>');
+                    }
+                </script>
+            </select>
+            <select id="year">
+                <option value="">Năm</option>
+                <script>
+                    for (let i = 2000; i <= 2023; i++) {
+                        document.write('<option value="' + i + '">' + i + '</option>');
+                    }
+                </script>
+            </select>
+        </div>
+        <input type="button" value="Xác nhận" onclick="checkDate()" id="submit-button">
+        <div id="error" class="error"></div>
+    </div>
+
+    <canvas id="confetti-canvas"></canvas>
+
+    <script>
+        const lines = [
+            "Bạn cần xác nhận một xíu nha",
+            "Vì đây là món quà dành cho một bông hoa nhỏ xinh",
+            "Nên bạn cần phải chọn đúng ngày tháng năm sinh của bông hoa ấy",
+            "Thì mới khởi động được web nha !",
+            "Xin mời bạn chọn"
+        ];
+
+        let currentLine = 0;
+
+        function typeLine() {
+            if (currentLine < lines.length) {
+                const typingArea = document.getElementById('typing-area');
+                typingArea.textContent = "";
+                const lineText = lines[currentLine];
+                let charIndex = 0;
+
+                const typingEffect = setInterval(() => {
+                    if (charIndex < lineText.length) {
+                        typingArea.textContent += lineText.charAt(charIndex);
+                        charIndex++;
+                    } else {
+                        clearInterval(typingEffect);
+                        setTimeout(() => {
+                            typingArea.textContent = "";
+                            currentLine++;
+                            typeLine();
+                        }, 1000);
+                    }
+                }, 100);
+            } else {
+                document.getElementById('date-selectors').style.display = 'flex';
+                document.getElementById('submit-button').style.display = 'block';
+            }
+        }
+
+        typeLine();
+
+        function checkDate() {
+            const userDay = document.getElementById("day").value;
+            const userMonth = document.getElementById("month").value;
+            const userYear = document.getElementById("year").value;
+            const errorMessage = document.getElementById("error");
+
+            const userHash = hashDate(userDay, userMonth, userYear);
+
+            if (userHash === correctHash) {
+                window.location.href = "HNH.html";
+            } else {
+                errorMessage.textContent = "Rất tiếc đây không phải là món quà dành cho bạn =((";
+            }
+        }
+
+        function hashDate(day, month, year) {
+            return btoa(day + month + year);
+        }
+
+        const correctHash = "MDUwOTIwMDM="; 
+    </script>
+    <script src="js/confetti.js"></script>
+
+</body>
+
+</html>
