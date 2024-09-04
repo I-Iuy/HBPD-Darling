@@ -33,7 +33,6 @@
             height: 100%;
             position: absolute;
             left: 0;
-            z-index: 2;
         }
 
         /* Container cho ruy băng */
@@ -692,8 +691,8 @@
             });
         };
         function checkScreenSize() {
-            if (window.innerWidth < 1400 || window.innerHeight < 800) {
-                alert('Web không hoạt động với kích thước dưới 1400x800 hoặc điện thoại');
+            if (window.innerWidth < 1200 || window.innerHeight < 600) {
+                alert('Web không hoạt động với kích thước dưới 1200x600 hoặc điện thoại');
                 window.location.href = 'index.html?reload=true';
             }
         }
